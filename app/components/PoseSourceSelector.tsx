@@ -1,12 +1,14 @@
 'use client';
-import { useState } from "react";
+
 import Image from "next/image";
 
-const PoseSourceSelector = () => {
-  const [selectedSrc, setSelectedSrc] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<boolean>(false);
-
+const PoseSourceSelector = ({imageStatus, selectedSrc, onSourceSelected}:
+  {
+    imageStatus: "idle"|"loading"|"loaded"|"error",
+    selectedSrc: string | null,
+    onSourceSelected: (sourceSelected:string|null)=>void
+  }
+  ) => {
   const basePath = "/reference-poses/v1/";
   const poseImageCollection = [
     "01-man-squats.jpg",
@@ -16,11 +18,17 @@ const PoseSourceSelector = () => {
   ];
 
   const handleImageSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    if(e.target.value === "")
+    {
+      onSourceSelected(null);
+      return;
+    }
+
     const imageSrc = basePath + e.target.value;
-    setSelectedSrc(imageSrc);
-    setIsLoading(true);
-    setError(false);
+    onSourceSelected(imageSrc);
   };
+
+  const selectedFilename = selectedSrc ? selectedSrc.replace(basePath, "") : "";
 
   return (
     <div className="w-full max-w-md flex flex-col gap-4">
@@ -35,6 +43,7 @@ const PoseSourceSelector = () => {
         <select
           name="poseImages"
           id="poseImages"
+          value={selectedFilename}
           onChange={handleImageSelection}
           className="p-2 border border-[color:var(--color-border)] rounded shadow-sm
                      bg-[color:var(--color-muted)] text-[color:var(--color-muted-foreground)]
@@ -51,24 +60,22 @@ const PoseSourceSelector = () => {
 
       {/* Image Display */}
       <div className="relative w-full h-96 bg-[color:var(--color-muted)] rounded shadow flex items-center justify-center overflow-hidden">
-        {isLoading && (
+        {imageStatus==='loading' && (
           <p className="absolute text-[color:var(--color-foreground)] dark:text-[color:var(--color-primary-foreground)]">
             Loading image...
           </p>
         )}
-        {error && (
+        {imageStatus==='error' && (
           <p className="absolute text-[color:var(--color-destructive-foreground)]">
             Failed to load image.
           </p>
         )}
-        {selectedSrc && !error && (
+        {selectedSrc && imageStatus==='loaded' && (
           <Image
             src={selectedSrc}
             alt="selected reference pose"
             fill
             style={{ objectFit: "contain" }}
-            onLoad={() => setIsLoading(false)}
-            onError={() => setError(true)}
           />
         )}
       </div>
