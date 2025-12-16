@@ -1,12 +1,14 @@
 'use client';
 import { useEffect, useState } from "react";
 import PoseSourceSelector from "./PoseSourceSelector";
-//import PoseDetector from "./PoseDetector";
+import PoseDetector from "./PoseDetector";
+import type { PoseLandmarkerResult } from "@mediapipe/tasks-vision";
 
 const PoseMatchController = () => {
     const [selectedSrc, setSelectedSrc] = useState<string|null>(null);
     const [image, setImage] = useState<HTMLImageElement|null>(null);
     const [imageStatus, setImageStatus] = useState<"idle"|"loading"|"loaded"|"error">("idle");
+    const [poseResults, setPoseResults] = useState<PoseLandmarkerResult|null>(null);
 
     useEffect(() => {
         if (!selectedSrc) 
@@ -49,6 +51,7 @@ const PoseMatchController = () => {
     return (
     <>
         <PoseSourceSelector imageStatus={imageStatus} selectedSrc={selectedSrc} onSourceSelected={handleSourceSelected} />
+        <PoseDetector image={image} onPoseResults={setPoseResults}/>
         
     </>
     );

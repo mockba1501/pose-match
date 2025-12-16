@@ -30,7 +30,8 @@ const useMediaPipePoseDetector = () => {
                     vision,
                     {
                     baseOptions: {
-                        modelAssetPath: "/models/pose_landmarker_full.task"
+                        modelAssetPath: "/models/pose_landmarker_full.task",
+                        delegate: "GPU",
                     },
                     runningMode: "IMAGE",
                     });
