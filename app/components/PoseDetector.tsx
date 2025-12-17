@@ -1,13 +1,15 @@
 "use client";
 import { useState } from 'react';
 import useMediaPipePoseDetector from '../hooks/useMediaPipePoseDetector'
-import type { PoseLandmarkerResult } from "@mediapipe/tasks-vision";
+//import type { PoseLandmarkerResult } from "@mediapipe/tasks-vision";
+import poseAdapter from '../lib/pose/poseAdapter';
+import type { PoseData } from "../types/poseData";
 import Spinner from '../ui/Spinner';
 
-export default function PoseDetector({image, onPoseResults}:
+export default function PoseDetector({image, onPoseData}:
     {
         image: HTMLImageElement | null,
-        onPoseResults: (results:PoseLandmarkerResult)=>void
+        onPoseData: (results:PoseData|null)=>void
     }) {
     const [isDetecting, setIsDetecting] = useState<boolean>(false);
     const {detect, isReady, isLoading, error} = useMediaPipePoseDetector();
@@ -20,10 +22,12 @@ export default function PoseDetector({image, onPoseResults}:
         const minDelay = new Promise(res => setTimeout(res, 300)); //To show the spinner in the button
         try {
             const poseResults = await detect(image);
+            
             if(poseResults)
             {
                 console.log("Pose results:", poseResults);
-                onPoseResults(poseResults);
+                const poseData = poseAdapter(poseResults, image.width, image.height);
+                onPoseData(poseData);
             }
             await minDelay;
         } finally {
