@@ -2,8 +2,9 @@
 import { useEffect, useState } from "react";
 import PoseSourceSelector from "./PoseSourceSelector";
 import PoseDetector from "./PoseDetector";
-//import type { PoseLandmarkerResult } from "@mediapipe/tasks-vision";
+import PoseCanvas from "./PoseCanvas";
 import type { PoseData } from "../types/poseData";
+
 const PoseMatchController = () => {
     const [selectedSrc, setSelectedSrc] = useState<string|null>(null);
     const [image, setImage] = useState<HTMLImageElement|null>(null);
@@ -39,6 +40,7 @@ const PoseMatchController = () => {
 
     const handleSourceSelected = (src: string | null) => {
         setSelectedSrc(src);
+        setPoseData(null);
 
         if (src) {
             setImageStatus("loading");
@@ -52,9 +54,8 @@ const PoseMatchController = () => {
     return (
     <>
         <PoseSourceSelector imageStatus={imageStatus} selectedSrc={selectedSrc} onSourceSelected={handleSourceSelected} />
-        {/*<PoseDetector image={image} onPoseResults={setPoseResults}/>*/}
         <PoseDetector image={image} onPoseData={setPoseData}/>
-        
+        <PoseCanvas image={image} poseData={poseData}/>
     </>
     );
 }

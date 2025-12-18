@@ -31,6 +31,7 @@ export default function PoseDetector({image, onPoseData}:
             }
             await minDelay;
         } finally {
+            console.log("Detection completed.");
             setIsDetecting(false);
         }
     }

@@ -57,27 +57,9 @@ const PoseSourceSelector = ({imageStatus, selectedSrc, onSourceSelected}:
           ))}
         </select>
       </div>
-
-      {/* Image Display */}
-      <div className="relative w-full h-96 bg-[color:var(--color-muted)] rounded shadow flex items-center justify-center overflow-hidden">
-        {imageStatus==='loading' && (
-          <p className="absolute text-[color:var(--color-foreground)] dark:text-[color:var(--color-primary-foreground)]">
-            Loading image...
-          </p>
-        )}
-        {imageStatus==='error' && (
-          <p className="absolute text-[color:var(--color-destructive-foreground)]">
-            Failed to load image.
-          </p>
-        )}
-        {selectedSrc && imageStatus==='loaded' && (
-          <Image
-            src={selectedSrc}
-            alt="selected reference pose"
-            fill
-            style={{ objectFit: "contain" }}
-          />
-        )}
+      <div className="h-16 flex items-center justify-center">
+        {imageStatus === "loading" && <p>Loading image…</p>}
+        {imageStatus === "error" && <p>Failed to load image</p>}
       </div>
     </div>
   );
