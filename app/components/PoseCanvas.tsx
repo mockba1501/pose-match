@@ -14,16 +14,23 @@ const PoseCanvas = ({image, poseData}:
 
     const drawLandmarks = (
         ctx: CanvasRenderingContext2D,
-        pose: PoseData
+        pose: PoseData,
+        drawWidth: number,
+        drawHeight: number,
+        offsetX: number,
+        offsetY: number
     ) => {
         ctx.fillStyle = "red";
         for (const landmark of pose.landmarks) {
             if(!landmark.visible)
                 continue;
 
-            const x = landmark.x * ctx.canvas.width;
-            const y = landmark.y * ctx.canvas.height;
+            //const x = landmark.x + ctx.canvas.width * drawWidth;
+            //const y = landmark.y + ctx.canvas.height * drawHeight;
 
+            const x = offsetX + landmark.x * drawWidth;
+            const y = offsetY + landmark.y * drawHeight;
+            
             ctx.beginPath();
             ctx.arc(x, y, 4, 0, Math.PI * 2);
             ctx.fill();
@@ -33,7 +40,11 @@ const PoseCanvas = ({image, poseData}:
     const drawConnectors = (
         ctx: CanvasRenderingContext2D,
         pose: PoseData,
-        connections: Array<[number, number]>
+        connections: Array<[number, number]>,
+        drawWidth: number,
+        drawHeight: number,
+        offsetX: number,
+        offsetY: number
     ) => {
         ctx.strokeStyle = "lime";
         ctx.lineWidth = 2;
@@ -45,10 +56,10 @@ const PoseCanvas = ({image, poseData}:
             if(!startLandmark.visible || !endLandmark.visible)
                 continue;
 
-            const startX = startLandmark.x * ctx.canvas.width;
-            const startY = startLandmark.y * ctx.canvas.height;
-            const endX = endLandmark.x * ctx.canvas.width;
-            const endY = endLandmark.y * ctx.canvas.height;
+            const startX = offsetX + startLandmark.x * drawWidth;
+            const startY = offsetY + startLandmark.y * drawHeight;
+            const endX = offsetX + endLandmark.x * drawWidth;
+            const endY = offsetY + endLandmark.y * drawHeight;
 
             ctx.beginPath();
             ctx.moveTo(startX, startY);
@@ -92,14 +103,17 @@ const PoseCanvas = ({image, poseData}:
         if(!poseData)
             return;
         // draw pose landmarks and connections
-        drawConnectors(ctx, poseData, POSE_CONNECTIONS);
-        drawLandmarks(ctx, poseData);
+        drawConnectors(ctx, poseData, POSE_CONNECTIONS, drawWidth, drawHeight, offsetX, offsetY);
+        drawLandmarks(ctx, poseData, drawWidth, drawHeight, offsetX, offsetY);
 
     },[image, poseData]);
 
     return (
         <div className="flex items-center justify-center">
-        <canvas ref={canvasRef} className="bg-white rounded-md"></canvas>
+        <canvas ref={canvasRef} 
+            width={POSE_VIEWPORT.width}
+            height={POSE_VIEWPORT.height}
+            className="bg-white rounded-md"></canvas>
         </div>
     )
 }

@@ -5,6 +5,8 @@ import useMediaPipePoseDetector from '../hooks/useMediaPipePoseDetector'
 import poseAdapter from '../lib/pose/poseAdapter';
 import type { PoseData } from "../types/poseData";
 import Spinner from '../ui/Spinner';
+import { BUTTON_BASE, BUTTON_PRIMARY, BUTTON_DISABLED} from "../config/ui";
+
 
 export default function PoseDetector({image, onPoseData}:
     {
@@ -35,6 +37,7 @@ export default function PoseDetector({image, onPoseData}:
             setIsDetecting(false);
         }
     }
+    const isDisabled = !isReady || !image || isLoading || isDetecting;
 
     return (
       <div className= "flex flex-col items-center gap-2">
@@ -47,8 +50,7 @@ export default function PoseDetector({image, onPoseData}:
       <button
         onClick={handleDetection}
         disabled={!isReady || !image || isLoading || isDetecting}
-        className={`px-4 py-2 rounded shadow-sm font-medium text-white
-          ${(!isReady || !image || isLoading || isDetecting) ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800'}`}
+        className={[BUTTON_BASE, isDisabled ? BUTTON_DISABLED : BUTTON_PRIMARY].join(" ")}
       >
         {isDetecting ? "Detecting..." : "Detect Pose"}
         {isDetecting && <Spinner/>}

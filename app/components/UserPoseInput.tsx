@@ -1,6 +1,7 @@
 "use client";
 import useWebcam from "../hooks/useWebcam";
 import {POSE_VIEWPORT} from '../config/poseViewport';
+import { BUTTON_BASE, BUTTON_PRIMARY, BUTTON_DANGER} from "../config/ui";
 
 import { useRef, useEffect } from "react";
 
@@ -24,12 +25,12 @@ const UserPoseInput = () => {
     return (
         <div className="flex flex-col items-center gap-2">
 
-            {status === "idle" && <button onClick={startStream}>Start Camera</button>}
+            {status === "idle" && <button className={`${BUTTON_BASE} ${BUTTON_PRIMARY}`} onClick={startStream}>Start Camera</button>}
             {status === "requesting" && <p>Waiting for camera permission…</p>}
             {status === "error" && <p>Failed to access camera</p>}
 
             <video ref={webcamRef} autoPlay muted playsInline width={POSE_VIEWPORT.width} height={POSE_VIEWPORT.height} />
-            {status === "ready" && <button onClick={stopStream}>Stop Camera</button>}
+            {status === "ready" && <button className={`${BUTTON_BASE} ${BUTTON_DANGER}`} onClick={stopStream}>Stop Camera</button>}
         </div>
     );
 };
