@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import PoseSourceSelector from "./PoseSourceSelector";
 import PoseDetector from "./PoseDetector";
 import PoseCanvas from "./PoseCanvas";
+import UserPoseInput from "./UserPoseInput";
 import type { PoseData } from "../types/poseData";
 
 const PoseMatchController = () => {
@@ -53,9 +54,24 @@ const PoseMatchController = () => {
     
     return (
     <>
-        <PoseSourceSelector imageStatus={imageStatus} selectedSrc={selectedSrc} onSourceSelected={handleSourceSelected} />
-        <PoseDetector image={image} onPoseData={setPoseData}/>
-        <PoseCanvas image={image} poseData={poseData}/>
+        <div className="w-full max-w-6xl flex flex-col gap-6">
+            <PoseSourceSelector imageStatus={imageStatus} selectedSrc={selectedSrc} onSourceSelected={handleSourceSelected} />
+            {/* Main pose area */}
+            <div className="flex justify-center gap-6">
+            {/* LEFT: Reference pose */}
+                <div className="flex flex-col items-center gap-2">
+                    <h3 className="font-medium">Reference Pose</h3>
+                        <PoseCanvas image={image} poseData={poseData}/>
+                </div>
+                 {/* RIGHT: User camera */}
+                <div className="flex flex-col items-center gap-2">
+                    <h3 className="font-medium">Your Pose</h3>
+                    <UserPoseInput />
+                </div>
+            </div>
+             {/* Controls */}
+            <PoseDetector image={image} onPoseData={setPoseData}/>
+        </div>
     </>
     );
 }

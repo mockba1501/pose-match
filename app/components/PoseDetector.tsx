@@ -37,16 +37,11 @@ export default function PoseDetector({image, onPoseData}:
     }
 
     return (
-        <div className="w-full max-w-md p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-      <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3">Pose Detector</h4>
-
-      {/* Status */}
-      <div className="mb-4">
+      <div className= "flex flex-col items-center gap-2">
         {isLoading && <p className="text-blue-500">Loading model...</p>}
         {!isLoading && isReady && <p className="text-green-500">Model ready!</p>}
         {error && <p className="text-red-500">Error: {error}</p>}
         {!image && <p className="text-gray-500">Select an image to detect pose.</p>}
-      </div>
 
       {/* Detect Button */}
       <button
@@ -58,8 +53,6 @@ export default function PoseDetector({image, onPoseData}:
         {isDetecting ? "Detecting..." : "Detect Pose"}
         {isDetecting && <Spinner/>}
       </button>
-
-      
     </div>
     );
 }

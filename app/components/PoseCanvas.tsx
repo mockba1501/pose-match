@@ -2,6 +2,7 @@
 import { useEffect, useRef } from "react";
 import type { PoseData } from "../types/poseData";
 import { POSE_CONNECTIONS } from "../lib/pose/poseLandmarks";
+import { POSE_VIEWPORT } from "../config/poseViewport";
 
 const PoseCanvas = ({image, poseData}:
     {
@@ -10,7 +11,7 @@ const PoseCanvas = ({image, poseData}:
     }) => {
 
     const canvasRef = useRef<HTMLCanvasElement|null>(null);
-    
+
     const drawLandmarks = (
         ctx: CanvasRenderingContext2D,
         pose: PoseData
@@ -65,17 +66,28 @@ const PoseCanvas = ({image, poseData}:
         if (!ctx)
             return;
 
+         // Set canvas size to match image
+        canvas.width = POSE_VIEWPORT.width;
+        canvas.height = POSE_VIEWPORT.height;
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         if(!image)
             return;
         
-        // Set canvas size to match image
-        canvas.width = image.width;
-        canvas.height = image.height;
+        const scale = Math.min(
+            POSE_VIEWPORT.width/ image.width,
+            POSE_VIEWPORT.height/ image.height
+        )
+
+        const drawWidth = image.width * scale;
+        const drawHeight = image.height * scale;
+
+        const offsetX = (POSE_VIEWPORT.width - drawWidth) / 2;
+        const offsetY = (POSE_VIEWPORT.height - drawHeight) / 2;
         
         // the original image
-        ctx.drawImage(image, 0, 0);
+        ctx.drawImage(image, offsetX, offsetY, drawWidth, drawHeight);
 
         if(!poseData)
             return;
@@ -86,10 +98,9 @@ const PoseCanvas = ({image, poseData}:
     },[image, poseData]);
 
     return (
-        <>
-        <h3>PoseCanvas</h3>
-        <canvas ref={canvasRef}></canvas>
-        </>
+        <div className="flex items-center justify-center">
+        <canvas ref={canvasRef} className="bg-white rounded-md"></canvas>
+        </div>
     )
 }
 

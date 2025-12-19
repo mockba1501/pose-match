@@ -1,7 +1,5 @@
 'use client';
 
-import Image from "next/image";
-
 const PoseSourceSelector = ({imageStatus, selectedSrc, onSourceSelected}:
   {
     imageStatus: "idle"|"loading"|"loaded"|"error",
@@ -13,7 +11,11 @@ const PoseSourceSelector = ({imageStatus, selectedSrc, onSourceSelected}:
   const poseImageCollection = [
     "01-man-squats.jpg",
     "02-woman-childpose.jpg",
+    "03-teen-downward.jpg",
+    "04-woman-corpse.jpg",
+    "05-man-pushup.jpg",
     "06-woman-yogaStanding.png",
+    "07-man-openArms.jpeg",
     "08-man-standing.jpg",
   ];
 
@@ -31,9 +33,9 @@ const PoseSourceSelector = ({imageStatus, selectedSrc, onSourceSelected}:
   const selectedFilename = selectedSrc ? selectedSrc.replace(basePath, "") : "";
 
   return (
-    <div className="w-full max-w-md flex flex-col gap-4">
+    <div className="w-full max-w-md flex flex-col gap-2">
       {/* Selector */}
-      <div className="flex flex-col gap-2">
+
         <label
           htmlFor="poseImages"
           className="font-medium text-[color:var(--color-foreground)] dark:text-[color:var(--color-primary-foreground)]"
@@ -45,9 +47,7 @@ const PoseSourceSelector = ({imageStatus, selectedSrc, onSourceSelected}:
           id="poseImages"
           value={selectedFilename}
           onChange={handleImageSelection}
-          className="p-2 border border-[color:var(--color-border)] rounded shadow-sm
-                     bg-[color:var(--color-muted)] text-[color:var(--color-muted-foreground)]
-                     focus:outline-none focus:ring-2 focus:ring-[color:var(--color-primary)]"
+          className="p-2 border rounded shadow-sm focus:outline-none focus:ring-2"
         >
           <option value="">-- Choose an image --</option>
           {poseImageCollection.map((item, key) => (
@@ -56,11 +56,8 @@ const PoseSourceSelector = ({imageStatus, selectedSrc, onSourceSelected}:
             </option>
           ))}
         </select>
-      </div>
-      <div className="h-16 flex items-center justify-center">
-        {imageStatus === "loading" && <p>Loading image…</p>}
-        {imageStatus === "error" && <p>Failed to load image</p>}
-      </div>
+        {imageStatus === "loading" && <p className="text-sm text-gray-500">Loading image…</p>}
+        {imageStatus === "error" && <p className="text-sm text-red-500">Failed to load image</p>}
     </div>
   );
 };
