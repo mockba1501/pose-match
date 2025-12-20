@@ -28,10 +28,10 @@ export interface PoseAnchor {
 
   /** Strategy used */
   strategy:
-    | "mid_hip"
-    | "mid_shoulder"
-    | "torso_centroid"
-    | "confidence_weighted_centroid";
+  | "mid_hip"
+  | "mid_shoulder"
+  | "torso_centroid"
+  | "confidence_weighted_centroid";
 }
 
 export interface PoseData {

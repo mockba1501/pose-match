@@ -1,21 +1,21 @@
 "use client";
 import useWebcam from "../hooks/useWebcam";
-import {POSE_VIEWPORT} from '../config/poseViewport';
-import { BUTTON_BASE, BUTTON_PRIMARY, BUTTON_DANGER} from "../config/ui";
+import { POSE_VIEWPORT } from '../config/poseViewport';
+import { BUTTON_BASE, BUTTON_PRIMARY, BUTTON_DANGER } from "../config/ui";
 
 import { useRef, useEffect } from "react";
 
 const UserPoseInput = () => {
-    
-    const webcamRef = useRef<HTMLVideoElement|null>(null)
-    const {status, stream, startStream, stopStream} = useWebcam();
 
-    useEffect(()=> {
+    const webcamRef = useRef<HTMLVideoElement | null>(null)
+    const { status, stream, startStream, stopStream } = useWebcam();
+
+    useEffect(() => {
         if (!stream && webcamRef.current) {
             webcamRef.current.srcObject = null;
         }
 
-        if(!stream || !webcamRef.current)
+        if (!stream || !webcamRef.current)
             return;
 
         webcamRef.current.srcObject = stream;

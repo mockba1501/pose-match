@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 const useWebcam = () => {
     const [status, setStatus] = useState<"idle" | "requesting" | "ready" | "error">("idle");
-    const [stream, setStream] = useState<MediaStream|null>(null);
+    const [stream, setStream] = useState<MediaStream | null>(null);
 
     const startStream = async () => {
         if (status === "error") {
@@ -10,15 +10,15 @@ const useWebcam = () => {
         }
 
         setStatus("requesting");
-        
-        try {
-        const cameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
-        
-        setStatus("ready");
-        setStream(cameraStream);
 
-        //cleaning up the stream
-        return true;
+        try {
+            const cameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
+
+            setStatus("ready");
+            setStream(cameraStream);
+
+            //cleaning up the stream
+            return true;
         } catch (error: unknown) {
             setStatus("error");
             console.log(error);
@@ -27,7 +27,7 @@ const useWebcam = () => {
     };
 
     const stopStream = () => {
-        if(!stream)
+        if (!stream)
             return;
         stream.getTracks().forEach(track => track.stop());
         setStatus("idle");
@@ -47,7 +47,7 @@ const useWebcam = () => {
         };
     }, []);
 
-    return {status, stream, startStream, stopStream};
+    return { status, stream, startStream, stopStream };
 }
 
 export default useWebcam;
