@@ -1,7 +1,8 @@
 import { FilesetResolver, PoseLandmarker } from "@mediapipe/tasks-vision";
 import { useEffect, useState, useRef, useCallback } from "react";
+import { mediapiperunningMode } from "../types/poseData";
 
-const useMediaPipePoseDetector = () => {
+const useMediaPipePoseDetector = (mode: mediapiperunningMode) => {
     const [isReady, setIsReady] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -33,7 +34,7 @@ const useMediaPipePoseDetector = () => {
                             modelAssetPath: "/models/pose_landmarker_full.task",
                             delegate: "GPU",
                         },
-                        runningMode: "IMAGE"
+                        runningMode: mode
                     });
                 if (!cancelled)
                     setIsReady(true);

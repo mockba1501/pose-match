@@ -1,5 +1,6 @@
 // Type Definitions for: landmarks, PoseLandmarkerResult, internal normalized landmarks
 // Source: useMediaPipePoseDetector hook, PoseDetector component
+export type mediapiperunningMode = "IMAGE" | "VIDEO";
 
 export interface PoseLandmark {
   /** Stable landmark index (0–32 for BlazePose) */

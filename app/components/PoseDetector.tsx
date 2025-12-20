@@ -1,7 +1,6 @@
 "use client";
 import { useState } from 'react';
 import useMediaPipePoseDetector from '../hooks/useMediaPipePoseDetector'
-//import type { PoseLandmarkerResult } from "@mediapipe/tasks-vision";
 import poseAdapter from '../lib/pose/poseAdapter';
 import type { PoseData } from "../types/poseData";
 import Spinner from '../ui/Spinner';
@@ -14,7 +13,7 @@ export default function PoseDetector({ image, onPoseData }:
     onPoseData: (results: PoseData | null) => void
   }) {
   const [isDetecting, setIsDetecting] = useState<boolean>(false);
-  const { detect, isReady, isLoading, error } = useMediaPipePoseDetector();
+  const { detect, isReady, isLoading, error } = useMediaPipePoseDetector("IMAGE");
 
   const handleDetection = async () => {
     if (!isReady || !image)

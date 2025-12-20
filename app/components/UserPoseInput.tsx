@@ -5,7 +5,9 @@ import { BUTTON_BASE, BUTTON_PRIMARY, BUTTON_DANGER } from "../config/ui";
 
 import { useRef, useEffect } from "react";
 
-const UserPoseInput = () => {
+const UserPoseInput = ({ onVideoReady }:
+    { onVideoReady: (video: HTMLVideoElement | null) => void }
+) => {
 
     const webcamRef = useRef<HTMLVideoElement | null>(null)
     const { status, stream, startStream, stopStream } = useWebcam();
@@ -21,7 +23,19 @@ const UserPoseInput = () => {
         webcamRef.current.srcObject = stream;
         webcamRef.current.play().catch(console.error);
 
-    }, [stream])
+        webcamRef.current.onloadedmetadata = null;
+        webcamRef.current.onloadedmetadata = () => {
+            onVideoReady(webcamRef.current!);
+        };
+
+    }, [stream]);
+
+    const handleStopStream = () => {
+        stopStream();
+        webcamRef.current!.srcObject = null;
+        onVideoReady(null);
+    }
+
     return (
         <div className="flex flex-col items-center gap-2">
 
@@ -30,7 +44,7 @@ const UserPoseInput = () => {
             {status === "error" && <p>Failed to access camera</p>}
 
             <video ref={webcamRef} autoPlay muted playsInline width={POSE_VIEWPORT.width} height={POSE_VIEWPORT.height} />
-            {status === "ready" && <button className={`${BUTTON_BASE} ${BUTTON_DANGER}`} onClick={stopStream}>Stop Camera</button>}
+            {status === "ready" && <button className={`${BUTTON_BASE} ${BUTTON_DANGER}`} onClick={handleStopStream}>Stop Camera</button>}
         </div>
     );
 };

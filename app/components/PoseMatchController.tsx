@@ -4,14 +4,16 @@ import PoseSourceSelector from "./PoseSourceSelector";
 import PoseDetector from "./PoseDetector";
 import PoseCanvas from "./PoseCanvas";
 import UserPoseInput from "./UserPoseInput";
+import UserPoseDetector from "./UserPoseDetector";
 import type { PoseData } from "../types/poseData";
 
 const PoseMatchController = () => {
     const [selectedSrc, setSelectedSrc] = useState<string | null>(null);
     const [image, setImage] = useState<HTMLImageElement | null>(null);
     const [imageStatus, setImageStatus] = useState<"idle" | "loading" | "loaded" | "error">("idle");
-    //const [poseResults, setPoseResults] = useState<PoseLandmarkerResult|null>(null);
-    const [poseData, setPoseData] = useState<PoseData | null>(null);
+    const [video, setVideo] = useState<HTMLVideoElement | null>(null);
+    const [refPoseData, setRefPoseData] = useState<PoseData | null>(null);
+    const [userPoseData, setUserPoseData] = useState<PoseData | null>(null);
 
     useEffect(() => {
         if (!selectedSrc)
@@ -41,7 +43,7 @@ const PoseMatchController = () => {
 
     const handleSourceSelected = (src: string | null) => {
         setSelectedSrc(src);
-        setPoseData(null);
+        setRefPoseData(null);
 
         if (src) {
             setImageStatus("loading");
@@ -61,16 +63,16 @@ const PoseMatchController = () => {
                     {/* LEFT: Reference pose */}
                     <div className="flex flex-col items-center gap-2">
                         <h3 className="font-medium">Reference Pose</h3>
-                        <PoseCanvas image={image} poseData={poseData} />
+                        <PoseCanvas image={image} poseData={refPoseData} />
+                        <PoseDetector image={image} onPoseData={setRefPoseData} />
                     </div>
                     {/* RIGHT: User camera */}
                     <div className="flex flex-col items-center gap-2">
                         <h3 className="font-medium">Your Pose</h3>
-                        <UserPoseInput />
+                        <UserPoseInput onVideoReady={setVideo} />
+                        <UserPoseDetector video={video} onPoseData={setUserPoseData} />
                     </div>
                 </div>
-                {/* Controls */}
-                <PoseDetector image={image} onPoseData={setPoseData} />
             </div>
         </>
     );
