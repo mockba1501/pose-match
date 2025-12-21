@@ -1,10 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 const useWebcam = () => {
     const [status, setStatus] = useState<"idle" | "requesting" | "ready" | "error">("idle");
     const [stream, setStream] = useState<MediaStream | null>(null);
 
-    const startStream = async () => {
+    const reset = useCallback(() => {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+        setStream(null);
+        setStatus("idle");
+    }, [stream]);
+
+    const startStream = useCallback(async () => {
         if (status === "error") {
             reset(); // optionally reset before requesting again
         }
@@ -24,28 +32,25 @@ const useWebcam = () => {
             console.log(error);
             return false
         }
-    };
+    }, [status, reset]);
 
-    const stopStream = () => {
+    const stopStream = useCallback(() => {
         if (!stream)
             return;
         stream.getTracks().forEach(track => track.stop());
         setStatus("idle");
         setStream(null);
-    }
-
-    const reset = () => {
-        stopStream(); // stop any lingering stream
-        setStatus("idle"); // reset state
-    };
+    }, [stream]);
 
     useEffect(() => {
         // This effect runs once on mount
         return () => {
             // Cleanup on unmount
-            stopStream(); // safely stops tracks and clears stream
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
         };
-    }, []);
+    }, [stream]);
 
     return { status, stream, startStream, stopStream };
 }

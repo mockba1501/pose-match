@@ -3,10 +3,15 @@ import useWebcam from "../hooks/useWebcam";
 import { POSE_VIEWPORT } from '../config/poseViewport';
 import { BUTTON_BASE, BUTTON_PRIMARY, BUTTON_DANGER } from "../config/ui";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useCallback } from "react";
 
-const UserPoseInput = ({ onVideoReady }:
-    { onVideoReady: (video: HTMLVideoElement | null) => void }
+const UserPoseInput = ({ onVideoReady, onStatusChanged, onStartReady, onStopReady }:
+    {
+        onVideoReady: (video: HTMLVideoElement | null) => void,
+        onStatusChanged: (status: "idle" | "requesting" | "ready" | "error") => void,
+        onStartReady: (start: () => void) => void,
+        onStopReady: (stop: () => void) => void
+    }
 ) => {
 
     const webcamRef = useRef<HTMLVideoElement | null>(null)
@@ -23,28 +28,37 @@ const UserPoseInput = ({ onVideoReady }:
         webcamRef.current.srcObject = stream;
         webcamRef.current.play().catch(console.error);
 
+        // We don't want to re-trigger this on every stream change, but we need to ensure the parent has the latest functions
+        // However, startStream and handleStopStream are now stable or properly updated.
+
         webcamRef.current.onloadedmetadata = null;
         webcamRef.current.onloadedmetadata = () => {
             onVideoReady(webcamRef.current!);
         };
 
-    }, [stream]);
+    }, [stream, onVideoReady]);
 
-    const handleStopStream = () => {
+    const handleStopStream = useCallback(() => {
         stopStream();
-        webcamRef.current!.srcObject = null;
+        if (webcamRef.current) {
+            webcamRef.current.srcObject = null;
+        }
         onVideoReady(null);
-    }
+    }, [stopStream, onVideoReady]);
+
+    useEffect(() => {
+        // Wrap in arrow function to prevent React from executing immediately if onStartReady sets a state
+        onStartReady(() => startStream);
+        onStopReady(() => handleStopStream);
+    }, [startStream, handleStopStream, onStartReady, onStopReady]);
+
+    useEffect(() => {
+        onStatusChanged(status);
+    }, [status, onStatusChanged]);
 
     return (
         <div className="flex flex-col items-center gap-2">
-
-            {status === "idle" && <button className={`${BUTTON_BASE} ${BUTTON_PRIMARY}`} onClick={startStream}>Start Camera</button>}
-            {status === "requesting" && <p>Waiting for camera permission…</p>}
-            {status === "error" && <p>Failed to access camera</p>}
-
-            <video ref={webcamRef} autoPlay muted playsInline width={POSE_VIEWPORT.width} height={POSE_VIEWPORT.height} />
-            {status === "ready" && <button className={`${BUTTON_BASE} ${BUTTON_DANGER}`} onClick={handleStopStream}>Stop Camera</button>}
+            <video ref={webcamRef} autoPlay muted playsInline width={POSE_VIEWPORT.width} height={POSE_VIEWPORT.height} hidden />
         </div>
     );
 };

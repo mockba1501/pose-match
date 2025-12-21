@@ -5,6 +5,8 @@ import PoseDetector from "./PoseDetector";
 import PoseCanvas from "./PoseCanvas";
 import UserPoseInput from "./UserPoseInput";
 import UserPoseDetector from "./UserPoseDetector";
+import UserPoseCanvas from "./UserPoseCanvas";
+import UserPoseControls from "./UserPoseControls";
 import type { PoseData } from "../types/poseData";
 
 const PoseMatchController = () => {
@@ -12,6 +14,9 @@ const PoseMatchController = () => {
     const [image, setImage] = useState<HTMLImageElement | null>(null);
     const [imageStatus, setImageStatus] = useState<"idle" | "loading" | "loaded" | "error">("idle");
     const [video, setVideo] = useState<HTMLVideoElement | null>(null);
+    const [status, setStatus] = useState<"idle" | "requesting" | "ready" | "error">("idle");
+    const [onStart, setOnStart] = useState<(() => void) | null>(null);
+    const [onStop, setOnStop] = useState<(() => void) | null>(null);
     const [refPoseData, setRefPoseData] = useState<PoseData | null>(null);
     const [userPoseData, setUserPoseData] = useState<PoseData | null>(null);
 
@@ -69,7 +74,9 @@ const PoseMatchController = () => {
                     {/* RIGHT: User camera */}
                     <div className="flex flex-col items-center gap-2">
                         <h3 className="font-medium">Your Pose</h3>
-                        <UserPoseInput onVideoReady={setVideo} />
+                        <UserPoseInput onVideoReady={setVideo} onStatusChanged={setStatus} onStartReady={setOnStart} onStopReady={setOnStop} />
+                        <UserPoseCanvas video={video} poseData={userPoseData} />
+                        <UserPoseControls status={status} onStart={onStart} onStop={onStop} />
                         <UserPoseDetector video={video} onPoseData={setUserPoseData} />
                     </div>
                 </div>
