@@ -59,3 +59,15 @@ export interface PoseData {
     };
   };
 }
+
+// Used within the poseSimilarity.ts
+export type JointAngleResult = {
+  id: string;
+  referenceAngle: number | null;
+  userAngle: number | null;
+  deviation: number | null;
+  status: "within_tolerance" | "outside_tolerance" | "ignored";
+};
+
+// Used within the PoseLandmarkStateResolver.ts
+export type LandmarkState =  "gray" | "green" | "yellow" | "red";

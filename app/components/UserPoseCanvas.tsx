@@ -1,12 +1,17 @@
-import type { PoseData } from "../types/poseData";
+import type { PoseData, LandmarkState } from "../types/poseData";
 import { useRef, useEffect } from "react";
-import { POSE_CONNECTIONS } from "../lib/pose/poseLandmarks";
+import { POSE_CONNECTIONS, statePriority } from "../lib/pose/poseLandmarks";
 import { POSE_VIEWPORT } from "../config/poseViewport";
 
-const UserPoseCanvas = ({ video, poseData }:
+function checkState(pointA: LandmarkState, pointB: LandmarkState) :  LandmarkState {
+    return statePriority[pointB] >= statePriority[pointA]? pointB : pointA;
+}
+
+const UserPoseCanvas = ({ video, poseData, landMarkStates }:
     {
         video: HTMLVideoElement | null,
-        poseData: PoseData | null
+        poseData: PoseData | null,
+        landMarkStates: Record<number, LandmarkState>
     }
 ) => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -22,9 +27,11 @@ const UserPoseCanvas = ({ video, poseData }:
             if (!landmark.visible)
                 continue;
 
+            const color = landMarkStates[landmark.index];
+            ctx.fillStyle = color;
             const x = landmark.x * ctx.canvas.width;
             const y = landmark.y * ctx.canvas.height;
-
+            
             ctx.beginPath();
             ctx.arc(x, y, 4, 0, Math.PI * 2);
             ctx.fill();
@@ -35,6 +42,7 @@ const UserPoseCanvas = ({ video, poseData }:
         ctx: CanvasRenderingContext2D,
         pose: PoseData,
         connections: Array<[number, number]>,
+        landMarkStates: Record<number, LandmarkState>
     ) => {
         ctx.strokeStyle = "Gray";
         ctx.lineWidth = 2;
@@ -50,6 +58,9 @@ const UserPoseCanvas = ({ video, poseData }:
             const startY = startLandmark.y * ctx.canvas.height;
             const endX = endLandmark.x * ctx.canvas.width;
             const endY = endLandmark.y * ctx.canvas.height;
+
+            const color = checkState(landMarkStates[startIdx], landMarkStates[endIdx]);
+            ctx.strokeStyle = color;
 
             ctx.beginPath();
             ctx.moveTo(startX, startY);
@@ -80,7 +91,7 @@ const UserPoseCanvas = ({ video, poseData }:
 
             if (poseData) {
                 // draw pose landmarks and connections
-                drawConnectors(ctx, poseData, POSE_CONNECTIONS);
+                drawConnectors(ctx, poseData, POSE_CONNECTIONS, landMarkStates);
                 drawLandmarks(ctx, poseData);
             }
 

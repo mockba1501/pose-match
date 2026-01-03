@@ -17,12 +17,20 @@ This system provides **geometric similarity metrics only**. It is **NOT** a medi
     - Zero-latency overlay rendering using direct Canvas operations.
     - Robust permission handling and stream management.
 - **Pose Normalization**: Geometric normalization (mid-hip centering, torso scaling) ready for comparison logic.
+    - NOTE: Angle-based comparison does not require pose normalization.
+    - Normalization is kept for future distance-based metrics.
 - **Dual-Pipeline**: Separate state management for Reference (Static) and User (Dynamic) poses.
+- **Similarity Scoring**:
+    - **Joint Angle Analysis**: Computes specific joint angles (shoulders, elbows, hips, knees).
+    - **Tolerance Checking**: Compares user angles against reference with configurable tolerance (e.g., ±5°).
+- **Visual Feedback**:
+    - **Real-time Skeleton Coloring**: Joints change color based on match status (Gray=Idle, Green=Match, Yellow=Close, Red=Miss).
+
 
 ### 🚧 In Progress (Next Steps)
-- **Similarity Scoring**: Implementing vector-based cosine similarity to compare Reference vs. User.
-- **Visual Feedback**: Real-time color-coding (Green = Match, Red = Miss) based on the score.
-- **Feedback UI**: Instructions like "Raise Left Arm" or "Widening Stance".
+- **Advanced Metrics**: Vector-based cosine similarity for overall body alignment.
+- **Textual Feedback UI**: Instructions like "Raise Left Arm" or "Widening Stance".
+
 
 ## 🛠️ Architecture
 - **Frontend**: Next.js 16 (App Router), React 19
@@ -47,5 +55,6 @@ This system provides **geometric similarity metrics only**. It is **NOT** a medi
 ## 🗺️ Roadmap
 - [x] **Phase 1**: Webcam setup & Static Reference Visualization
 - [x] **Phase 2**: Real-time MediaPipe Integration (Video Mode)
-- [ ] **Phase 3**: Similarity Scoring Engine (Vector Math)
-- [ ] **Phase 4**: User Feedback System (Visual & Text)
+- [x] **Phase 3**: Similarity Scoring Engine (Vector Math & Joint Angles)
+- [x] **Phase 4**: User Feedback System (Visual State Feedback)
+

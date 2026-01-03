@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import PoseSourceSelector from "./PoseSourceSelector";
 import PoseDetector from "./PoseDetector";
 import PoseCanvas from "./PoseCanvas";
@@ -8,6 +8,8 @@ import UserPoseDetector from "./UserPoseDetector";
 import UserPoseCanvas from "./UserPoseCanvas";
 import UserPoseControls from "./UserPoseControls";
 import type { PoseData } from "../types/poseData";
+import {computeJointAngles, compareJointAngles} from "../lib/pose/poseSimilarity";
+import {setLandmarkStates} from "../lib/pose/PoseLandmarkStateResolver";
 
 const PoseMatchController = () => {
     const [selectedSrc, setSelectedSrc] = useState<string | null>(null);
@@ -19,6 +21,8 @@ const PoseMatchController = () => {
     const [onStop, setOnStop] = useState<(() => void) | null>(null);
     const [refPoseData, setRefPoseData] = useState<PoseData | null>(null);
     const [userPoseData, setUserPoseData] = useState<PoseData | null>(null);
+    //const [refJointAngles, setRefJointAngles] = useState<Record<string, number | null>>({});
+    //const [userJointAngles, setUserJointAngles] = useState<Record<string, number | null>>({});
 
     useEffect(() => {
         if (!selectedSrc)
@@ -59,6 +63,26 @@ const PoseMatchController = () => {
         }
     };
 
+    const refJointAngles = useMemo<Record<string, number | null>>(() => {
+        if(!refPoseData) return {}
+        return computeJointAngles(refPoseData);
+    },[refPoseData]);
+
+    const userJointAngles = useMemo<Record<string, number | null>>(() => {
+        if(!userPoseData) return {}
+        return computeJointAngles(userPoseData);
+    },[userPoseData]);
+
+    const jointComparisonResults = useMemo(() => {
+        if(!refJointAngles || !userJointAngles)
+            return [];
+
+        return compareJointAngles(refJointAngles, userJointAngles);
+    }, [refJointAngles, userJointAngles]);
+
+    const landMarkStates = useMemo(() => {
+        return setLandmarkStates(jointComparisonResults);
+    }, [jointComparisonResults]);
     return (
         <>
             <div className="w-full max-w-6xl flex flex-col gap-6">
@@ -75,9 +99,9 @@ const PoseMatchController = () => {
                     <div className="flex flex-col items-center gap-2">
                         <h3 className="font-medium">Your Pose</h3>
                         <UserPoseInput onVideoReady={setVideo} onStatusChanged={setStatus} onStartReady={setOnStart} onStopReady={setOnStop} />
-                        <UserPoseCanvas video={video} poseData={userPoseData} />
-                        <UserPoseControls status={status} onStart={onStart} onStop={onStop} />
+                        <UserPoseCanvas video={video} poseData={userPoseData} landMarkStates={landMarkStates}/>
                         <UserPoseDetector video={video} onPoseData={setUserPoseData} />
+                        <UserPoseControls status={status} onStart={onStart} onStop={onStop} />
                     </div>
                 </div>
             </div>

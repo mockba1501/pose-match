@@ -1,3 +1,5 @@
+import type { LandmarkState } from "@/app/types/poseData";
+
 export const POSE_LANDMARKS = {
   NOSE: 0,
 
@@ -92,3 +94,34 @@ export const POSE_CONNECTIONS: Array<[number, number]> = [
   [27, 31],
   [28, 32]
 ];
+
+export type JointDescriptor = {
+  id: string;                  // Unique joint name
+  landmarks: [number, number, number];  // Triplet: [A, B, C] for angle at B
+  toleranceDegrees: number;   // Optional tolerance for angle
+};
+
+
+export const JOINTS: JointDescriptor[] = [
+  { id: "left_elbow", landmarks: [POSE_LANDMARKS.LEFT_SHOULDER, POSE_LANDMARKS.LEFT_ELBOW, POSE_LANDMARKS.LEFT_WRIST], toleranceDegrees: 5 },
+  { id: "right_elbow", landmarks: [POSE_LANDMARKS.RIGHT_SHOULDER, POSE_LANDMARKS.RIGHT_ELBOW, POSE_LANDMARKS.RIGHT_WRIST], toleranceDegrees: 5 },
+
+  { id: "left_shoulder", landmarks: [POSE_LANDMARKS.LEFT_HIP, POSE_LANDMARKS.LEFT_SHOULDER, POSE_LANDMARKS.LEFT_ELBOW], toleranceDegrees: 5 },
+  { id: "right_shoulder", landmarks: [POSE_LANDMARKS.RIGHT_HIP, POSE_LANDMARKS.RIGHT_SHOULDER, POSE_LANDMARKS.RIGHT_ELBOW], toleranceDegrees: 5 },
+
+  { id: "left_hip", landmarks: [POSE_LANDMARKS.LEFT_SHOULDER, POSE_LANDMARKS.LEFT_HIP, POSE_LANDMARKS.LEFT_KNEE], toleranceDegrees: 5 },
+  { id: "right_hip", landmarks: [POSE_LANDMARKS.RIGHT_SHOULDER, POSE_LANDMARKS.RIGHT_HIP, POSE_LANDMARKS.RIGHT_KNEE], toleranceDegrees: 5 },
+
+  { id: "left_knee", landmarks: [POSE_LANDMARKS.LEFT_HIP, POSE_LANDMARKS.LEFT_KNEE, POSE_LANDMARKS.LEFT_ANKLE], toleranceDegrees: 5 },
+  { id: "right_knee", landmarks: [POSE_LANDMARKS.RIGHT_HIP, POSE_LANDMARKS.RIGHT_KNEE, POSE_LANDMARKS.RIGHT_ANKLE], toleranceDegrees: 5 },
+
+  { id: "left_ankle", landmarks: [POSE_LANDMARKS.LEFT_KNEE, POSE_LANDMARKS.LEFT_ANKLE, POSE_LANDMARKS.LEFT_FOOT_INDEX], toleranceDegrees: 5 },
+  { id: "right_ankle", landmarks: [POSE_LANDMARKS.RIGHT_KNEE, POSE_LANDMARKS.RIGHT_ANKLE, POSE_LANDMARKS.RIGHT_FOOT_INDEX], toleranceDegrees: 5 },
+];
+
+export const statePriority: Record<LandmarkState, number> = {
+    "red": 3,
+    "green": 2,
+    "yellow": 1,
+    "gray": 0
+};
